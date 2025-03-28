@@ -50,7 +50,7 @@ func fetchVaultLogin(vaultAddr string, jwt string, vaultRole string) (models.Log
 	}
 
 	if len(login.Errors) > 0 {
-		return login, fmt.Errorf(login.Errors[0])
+		return login, fmt.Errorf("%s", login.Errors[0])
 	}
 	if login.Auth.ClientToken == "" {
 		return login, fmt.Errorf("unable to retrieve vault token")
@@ -114,6 +114,21 @@ func FetchVaultToken(vaultAddr string, vaultRole string) (vaultToken string, err
 	}
 
 	return token, nil
+}
+
+// FetchVaultLogin gets Workload Identity Token from GCP Metadata API and uses it to fetch Vault Login object.
+func FetchVaultLogin(vaultAddr string, vaultRole string) (models.Login, error) {
+	jwt, err := fetchJWT(vaultRole)
+	if err != nil {
+		return models.Login{}, err
+	}
+
+	login, err := fetchVaultLogin(vaultAddr, jwt, vaultRole)
+	if err != nil {
+		return models.Login{}, err
+	}
+
+	return login, nil
 }
 
 // FetchVaultSecret returns secret from Hashicorp Vault.
