@@ -14,7 +14,7 @@ import (
 
 func fetchJWT(vaultRole string) (jwt string, err error) {
 	client := metadata.NewClient(http.DefaultClient)
-	return client.GetWithContext(context.Background(), "instance/service-accounts/default/identity?audience=http://vault/" + vaultRole + "&format=full")
+	return client.GetWithContext(context.Background(), "instance/service-accounts/default/identity?audience=http://vault/"+vaultRole+"&format=full")
 }
 
 func fetchVaultToken(vaultAddr string, jwt string, vaultRole string) (vaultToken string, err error) {
@@ -28,40 +28,39 @@ func fetchVaultToken(vaultAddr string, jwt string, vaultRole string) (vaultToken
 }
 
 func fetchVaultLogin(vaultAddr string, jwt string, vaultRole string) (models.Login, error) {
+	var login models.Login
 	client := http.DefaultClient
 
 	j := `{"role":"` + vaultRole + `", "jwt":"` + jwt + `"}`
 
 	req, err := http.NewRequest(http.MethodPost, vaultAddr+"/v1/auth/gcp/login", bytes.NewBufferString(j))
 	if err != nil {
-		return models.Login{}, err
+		return login, err
 	}
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return models.Login{}, err
+		return login, err
 	}
 	defer resp.Body.Close()
 
-	var login models.Login
-
 	err = json.NewDecoder(resp.Body).Decode(&login)
 	if err != nil {
-		return models.Login{}, err
+		return login, err
 	}
 
 	if len(login.Errors) > 0 {
-		return models.Login{}, fmt.Errorf(login.Errors[0])
+		return login, fmt.Errorf(login.Errors[0])
 	}
 	if login.Auth.ClientToken == "" {
-		return models.Login{}, fmt.Errorf("unable to retrieve vault token")
+		return login, fmt.Errorf("unable to retrieve vault token")
 	}
 	if resp.StatusCode < 200 || resp.StatusCode > 202 {
 		body, err := io.ReadAll(resp.Body)
 		if err != nil {
-			return models.Login{}, err
+			return login, err
 		}
-		return models.Login{}, fmt.Errorf("request failed, expected status: 2xx got: %d, error message %s", resp.StatusCode, string(body))
+		return login, fmt.Errorf("request failed, expected status: 2xx got: %d, error message %s", resp.StatusCode, string(body))
 	}
 
 	return login, nil
