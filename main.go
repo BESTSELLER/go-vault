@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -30,7 +29,7 @@ func main() {
 
 	fmt.Println(secret)
 	data := []byte(secret)
-	err = ioutil.WriteFile("/secrets/secrets", data, 0644)
+	err = os.WriteFile("/secrets/secrets", data, 0644)
 	if err != nil {
 		fmt.Println(err)
 	}
