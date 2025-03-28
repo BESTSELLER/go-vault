@@ -1,7 +1,9 @@
 module github.com/BESTSELLER/go-vault
 
-go 1.20
+go 1.21
 
-require cloud.google.com/go/compute/metadata v0.5.2
+toolchain go1.24.1
 
-require golang.org/x/sys v0.25.0 // indirect
+require cloud.google.com/go/compute/metadata v0.6.0
+
+require golang.org/x/sys v0.28.0 // indirect
