@@ -14,7 +14,7 @@ import (
 
 func fetchJWT(vaultRole string) (jwt string, err error) {
 	client := metadata.NewClient(http.DefaultClient)
-	return client.GetWithContext(context.Background(), "instance/service-accounts/default/identity?audience=http://vault/"+vaultRole+"&format=full")
+	return client.GetWithContext(context.Background(), "instance/service-accounts/default/identity?audience=http://vault/" + vaultRole + "&format=full")
 }
 
 func fetchVaultToken(vaultAddr string, jwt string, vaultRole string) (vaultToken string, err error) {
