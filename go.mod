@@ -1,6 +1,6 @@
 module github.com/BESTSELLER/go-vault
 
-go 1.20
+go 1.24.1
 
 require cloud.google.com/go/compute/metadata v0.5.2
 
